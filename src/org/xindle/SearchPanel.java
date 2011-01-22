@@ -49,14 +49,16 @@ public class SearchPanel extends AbstractKPanel {
 
 	KeyEventDispatcher eventDispatcher = new KeyEventDispatcher() {
 		public boolean dispatchKeyEvent(KeyEvent evt) {
-			if ((evt.getKeyCode() == KindleKeyCodes.VK_RIGHT_HAND_SIDE_TURN_PAGE
-					|| evt.getKeyCode() == KindleKeyCodes.VK_LEFT_HAND_SIDE_TURN_PAGE) && currentPage < totalPages) {
+			if ((evt.getKeyCode() == KindleKeyCodes.VK_RIGHT_HAND_SIDE_TURN_PAGE || evt
+					.getKeyCode() == KindleKeyCodes.VK_LEFT_HAND_SIDE_TURN_PAGE)
+					&& currentPage < totalPages) {
 				// pagination of search results
 				currentPage++;
 				search(currentSearch);
 				return true;
 			}
-			if (evt.getKeyCode() == KindleKeyCodes.VK_TURN_PAGE_BACK && currentPage > 0) {
+			if (evt.getKeyCode() == KindleKeyCodes.VK_TURN_PAGE_BACK
+					&& currentPage > 0) {
 				// pagination of search results
 				currentPage--;
 				search(currentSearch);
@@ -145,9 +147,10 @@ public class SearchPanel extends AbstractKPanel {
 
 			for (int i = 0; i < items.getLength(); i++) {
 				Node item = items.item(i);
-				if(item.getNodeName().equals("opensearch:totalResults")){
-					totalPages =  Integer.parseInt(item.getTextContent()) / DEFAULT_SEARCH_SIZE;
-					logger.info(""+totalPages);
+				if (item.getNodeName().equals("opensearch:totalResults")) {
+					totalPages = Integer.parseInt(item.getTextContent())
+							/ DEFAULT_SEARCH_SIZE;
+					logger.info("" + totalPages);
 				}
 				if (item.getNodeName().equals("entry")) {
 					NodeList childrens = item.getChildNodes();
@@ -161,13 +164,7 @@ public class SearchPanel extends AbstractKPanel {
 						} else if (childItem.getNodeName().equals("summary")) {
 							summary = childItem.getTextContent();
 						} else if (childItem.getNodeName().equals("id")) {
-							id = childItem.getTextContent()
-									.substring(
-											childItem.getTextContent()
-													.lastIndexOf('/') + 1);
-							if (id.endsWith("v1") || id.endsWith("v2")) {
-								id = id.substring(0, id.length() - 2);
-							}
+							id = Util.getIdFromUrl(childItem.getTextContent());
 						}
 					}
 					results.add(new Result(title, summary, id));
@@ -192,7 +189,9 @@ public class SearchPanel extends AbstractKPanel {
 			}
 		});
 		resultPanel.add(selectable);
-        if (focus) { selectable.requestFocus(); }
+		if (focus) {
+			selectable.requestFocus();
+		}
 		resultPanel.add(new KLabel(result.summary));
 	}
 
@@ -232,19 +231,20 @@ public class SearchPanel extends AbstractKPanel {
 			public void run() {
 				searchField.requestFocus();
 				// addResult(new Result("Foo", "Bar"));
-				//remove pagination listener
+				// remove pagination listener
 				KeyboardFocusManager.getCurrentKeyboardFocusManager()
 						.addKeyEventDispatcher(eventDispatcher);
 				root.rootContainer.repaint();
 			}
 		};
 	}
-	public Runnable onStop(){
-		return new Runnable(){
-			public void run(){
-				//remove pagination listener
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .removeKeyEventDispatcher(eventDispatcher);
+
+	public Runnable onStop() {
+		return new Runnable() {
+			public void run() {
+				// remove pagination listener
+				KeyboardFocusManager.getCurrentKeyboardFocusManager()
+						.removeKeyEventDispatcher(eventDispatcher);
 			}
 		};
 	}

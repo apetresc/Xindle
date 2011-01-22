@@ -44,7 +44,17 @@ public class HomePanel extends AbstractKPanel {
 		final Result[] results = new Result[3];
 
 		get_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
+		get_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				root.setCurrentPanel(root.searchPanel);
+			}
+		});
 		browse_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
+		browse_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				root.setCurrentPanel(root.downloadedPanel);
+			}
+		});
 
 		label.setFont(res.getFont(KFontFamilyName.SANS_SERIF, 25));
 
