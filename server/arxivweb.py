@@ -92,11 +92,12 @@ class download_paper:
   def determine_main_tex_file(self, filename):
     texdir = os.path.dirname(filename)
     for fn in os.listdir(texdir):
-      f = open(os.path.join(texdir, fn), 'r')
-      fc = f.read()
-      f.close()
-      if re.search(r'\\begin\{document\}', fc):
-        return os.path.join(texdir, fn)
+      if fn[-3:] == 'tex':
+      	f = open(os.path.join(texdir, fn), 'r')
+      	fc = f.read()
+      	f.close()
+      	if re.search(r'\\begin\{document\}', fc):
+          return os.path.join(texdir, fn)
     return None
 
   def sanitize(self, tex_file):
