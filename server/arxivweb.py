@@ -53,7 +53,12 @@ class download_paper:
     f.write(tex_file)
     f.close()
 
-    return filename
+    pdf_filename = self.generate_pdf(tex_file_name)
+    
+    if pdf_filename:
+      return filename
+    else:
+      return "ERROR"
 
   def download_source(self, ref, type, download_path):
     download_path = os.path.expanduser(download_path)
@@ -96,5 +101,14 @@ class download_paper:
     tex_file = latex_sanitizer.shrink_margins(tex_file)
     tex_file = latex_sanitizer.remove_links(tex_file)
     return tex_file
+
+  def generate_pdf(self, filename):
+    rc = os.system('pdflatex -halt-on-error -output-directory %s %s' % (os.path.dirname(filename), filename))
+    if rc == 0:
+      rc = os.system('pdflatex -halt-on-error -output-directory %s %s' % (os.path.dirname(filename), filename))
+    if rc != 0:
+      print >> sys.stderr, "ERROR: Generating PDF file for %s" % filename
+      return None
+    return filename[:-4] + '.pdf'
 
 if __name__ == "__main__": app.run()
