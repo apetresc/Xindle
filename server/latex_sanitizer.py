@@ -26,11 +26,15 @@ def remove_package(tex_file, package_name):
     return tex_file
   return re.subn(r'\\usepackage(\[.*\])?\{%s\}' % package_name, '\n%% Removed package %s\n' % package_name, tex_file)[0]
 
-
 def shrink_margins(tex_file):
   tex_file = remove_package(tex_file, 'fullpage')
   tex_file = remove_package(tex_file, 'geometry')
-  tex_file = add_package(tex_file, 'geometry', ['left=10pt', 'right=10pt', 'bottom=10pt', 'top=10pt'])
+  tex_file = add_package(tex_file, 'geometry', ['paperwidth=5.5in', 'paperheight=7.0in', 'left=10pt', 'right=10pt', 'bottom=10pt', 'top=10pt'])
+  return tex_file
+
+def remove_links(tex_file):
+  tex_file = remove_package(tex_file, 'hyperref')
+  tex_file = add_package(tex_file, 'hyperref', ['colorlinks=true', 'linkcolor=red'])
   return tex_file
 
 # Testing purposes only
