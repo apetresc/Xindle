@@ -17,6 +17,14 @@ public class Util {
 		this.context = context;
 	}
 
+	public static String getIdFromUrl(String url) {
+		String id = url.substring(url.lastIndexOf('/') + 1);
+		if (id.endsWith("v1") || id.endsWith("v2")) {
+			id = id.substring(0, id.length() - 2);
+		}
+		return id;
+	}
+
 	public List getAllPapers() {
 		File dataDir = new File(context.getHomeDirectory(), "papers");
 		File[] dirs = dataDir.listFiles();
@@ -25,7 +33,7 @@ public class Util {
 		for (int i = 0; i < dirs.length; i++) {
 			output.add(new Paper(dirs[i]));
 		}
-//		logger.info(output);
+		// logger.info(output);
 
 		return output;
 	}
