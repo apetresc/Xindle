@@ -31,6 +31,7 @@ import com.amazon.kindle.kindlet.net.ConnectivityHandler;
 import com.amazon.kindle.kindlet.net.NetworkDisabledDetails;
 import com.amazon.kindle.kindlet.ui.KLabel;
 import com.amazon.kindle.kindlet.ui.KLabelMultiline;
+import com.amazon.kindle.kindlet.ui.KOptionPane;
 import com.amazon.kindle.kindlet.ui.KTextArea;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -45,7 +46,7 @@ public class MoreInfoPanel extends AbstractKPanel {
 	private UIRoot root;
 	private KWTSelectableLabel downloadButton;
 	private DownloadHandler downloadHandler;
-	
+
 	KLabel titleLabel = new KLabel("TITLES COMES HERE.");
 	KLabelMultiline summaryArea = new KLabelMultiline("SUMMARY COMES HERE.");
 	Logger logger = Logger.getLogger(MoreInfoPanel.class);
@@ -80,17 +81,18 @@ public class MoreInfoPanel extends AbstractKPanel {
 		downloadHandler = new DownloadHandler();
 		downloadButton = new KWTSelectableLabel("Download this paper");
 		downloadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                logger.info("About to download: " + result.id);
-                root.context.getConnectivity().submitConnectivityRequest(downloadHandler);
-            }
+			public void actionPerformed(ActionEvent e) {
+				logger.info("About to download: " + result.id);
+				root.context.getConnectivity().submitConnectivityRequest(
+						downloadHandler);
+			}
 		});
 		add(downloadButton, gbc);
 	}
 
-	   class DownloadHandler implements ConnectivityHandler {
-	        public void connected() throws InterruptedException {
-	            KindletContext context = root.context;
+	class DownloadHandler implements ConnectivityHandler {
+		public void connected() throws InterruptedException {
+	            final KindletContext context = root.context;
 	            try {
                     URL url = new URL("http://ec2-174-129-215-245.compute-1.amazonaws.com/download?arxiv_id=" + result.id);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -113,8 +115,19 @@ public class MoreInfoPanel extends AbstractKPanel {
                         AmazonS3 s3 = new AmazonS3Client(new BasicAWSCredentials("AKIAIZ3F54ERWCUWT62Q", "lWkVNNwbxXWWhCK9uoUgWFmYIHoU87HLSM8MGR69"));
                         String s3Prefix = responseString.substring(responseString.lastIndexOf('/', responseString.lastIndexOf('/') - 1) + 1, responseString.lastIndexOf('/'));
                         logger.info("Requesting S3 prefix: " + s3Prefix);
-                        List pages = s3.listObjects("xindle-docs", s3Prefix).getObjectSummaries();
+                        final List pages = s3.listObjects("xindle-docs", s3Prefix).getObjectSummaries();
                         Iterator pagesIt = pages.iterator();
+                        
+						class ProgressSetter implements Runnable {
+							public ProgressSetter(int page) {
+								this.page = page;
+							}
+							int page;
+							public void run() {        	
+	                        	context.getProgressIndicator().setString(page + " out of "+ pages.size());
+							}
+						}
+                        EventQueue.invokeLater(new ProgressSetter(0));
                         int p = 0;
                         while (pagesIt.hasNext()) {
                             S3Object page = s3.getObject(new GetObjectRequest("xindle-docs", ((S3ObjectSummary) pagesIt.next()).getKey()));
@@ -133,7 +146,16 @@ public class MoreInfoPanel extends AbstractKPanel {
                             }
                             pageData.close();
                             p++;
+
+                            EventQueue.invokeLater(new ProgressSetter(p));
                         }
+
+                        EventQueue.invokeLater(new Runnable(){
+							public void run() {
+								context.getProgressIndicator().setString("");
+							}});
+                        // done.
+                        // KOptionPane.showMessageDialog(root.rootContainer, "Hello, world");
                     } else {
                         logger.warn("Got non-OK response: " + connection.getResponseCode());
                     }
@@ -145,12 +167,12 @@ public class MoreInfoPanel extends AbstractKPanel {
 	            
 	        }
 
-	        public void disabled(NetworkDisabledDetails detail)
-	                throws InterruptedException {
-	            // do nothing.
-	        }
-	    }
-	   
+		public void disabled(NetworkDisabledDetails detail)
+				throws InterruptedException {
+			// do nothing.
+		}
+	}
+
 	public Runnable onStart() {
 		return new Runnable() {
 			public void run() {
