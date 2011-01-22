@@ -4,7 +4,6 @@ import com.amazon.kindle.kindlet.AbstractKindlet;
 import com.amazon.kindle.kindlet.KindletContext;
 import com.amazon.kindle.kindlet.ui.KMenu;
 import com.amazon.kindle.kindlet.ui.KMenuItem;
-import com.amazon.kindle.kindlet.ui.KPanel;
 
 /**
  * This sample Kindlet demonstrates the use of the KWTCheckbox.
@@ -13,28 +12,7 @@ import com.amazon.kindle.kindlet.ui.KPanel;
  * 
  */
 public class Main extends AbstractKindlet {
-	private KPanel currentPanel = null;
-	private KindletContext context = null;
-	private SearchPanel searchPanel = new SearchPanel();
-
-	/**
-	 * Change the currently displayed panel.
-	 * 
-	 * @param panel
-	 *            Panel to be loaded.
-	 * @param action
-	 *            Panel to be performed after the loading.
-	 * */
-	private void setCurrentPanel(KPanel panel, Runnable action) {
-		if (currentPanel != null) {
-			context.getRootContainer().remove(currentPanel);
-		}
-		context.getRootContainer().add(panel);
-		currentPanel = panel;
-		if (action != null) {
-			action.run();
-		}
-	}
+	private SearchPanel searchPanel = null;
 
 	private KMenu makeMenu() {
 		KMenu menu = new KMenu();
@@ -55,10 +33,13 @@ public class Main extends AbstractKindlet {
 	}
 
 	public void create(final KindletContext context) {
-		this.context = context;
+		UIRoot root = new UIRoot(context);
 		// set the default panel.
 		KMenu menu = makeMenu();
-		setCurrentPanel(searchPanel, null);
+
+		searchPanel = new SearchPanel(root);
+
+		root.setCurrentPanel(searchPanel, null);
 		context.setMenu(menu);
 	}
 }
