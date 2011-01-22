@@ -3,6 +3,7 @@ package org.xindle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.RootCategory;
 
 import com.amazon.kindle.kindlet.AbstractKindlet;
@@ -21,6 +22,7 @@ public class Main extends AbstractKindlet {
 	private SearchPanel searchPanel = null;
 	private HomePanel homePanel = null;
 	private UIRoot root = null;
+	Logger logger = Logger.getLogger(Main.class);
 
 	private KMenu makeMenu() {
 		KMenu menu = new KMenu();
@@ -52,6 +54,7 @@ public class Main extends AbstractKindlet {
 	}
 
 	public void create(final KindletContext context) {
+		logger.info("Starting application");
 		root = new UIRoot(context);
 
 		context.getOrientationController().lockOrientation(
@@ -63,7 +66,8 @@ public class Main extends AbstractKindlet {
 		homePanel = new HomePanel(root);
 
 		// set the default panel.
-		root.setCurrentPanel(homePanel);
+//		root.setCurrentPanel(homePanel);
+		root.setCurrentPanel(searchPanel);
 		context.setMenu(menu);
 	}
 }
