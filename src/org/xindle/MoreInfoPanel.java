@@ -11,12 +11,13 @@ import org.kwt.ui.KWTSelectableLabel;
 
 import com.amazon.kindle.kindlet.event.KindleKeyCodes;
 import com.amazon.kindle.kindlet.ui.KLabel;
+import com.amazon.kindle.kindlet.ui.KLabelMultiline;
 import com.amazon.kindle.kindlet.ui.KTextArea;
 
 public class MoreInfoPanel extends AbstractKPanel {
 	private UIRoot root;
 	KLabel titleLabel = new KLabel("TITLES COMES HERE.");
-	KTextArea summaryArea = new KTextArea("SUMMARY COMES HERE.");
+	KLabelMultiline summaryArea = new KLabelMultiline("SUMMARY COMES HERE.");
 	Logger logger = Logger.getLogger(MoreInfoPanel.class);
 	KeyEventDispatcher eventDispatcher = new KeyEventDispatcher() {
 		public boolean dispatchKeyEvent(KeyEvent evt) {
