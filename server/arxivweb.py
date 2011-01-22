@@ -3,6 +3,7 @@ import gzip
 import urllib
 import os
 import os.path
+import sys
 import tarfile
 import re
 from urlparse import parse_qs
@@ -56,7 +57,8 @@ class download_paper:
     pdf_filename = self.generate_pdf(tex_file_name)
     
     if pdf_filename:
-      return filename
+      self.convert_pdf(pdf_filename, os.path.join('/mnt/xindle-docs/', ref.replace('/', '-')))
+      return 'http://xindle-docs.s3.amazonaws.com/%s/%s-page-0.png' % (ref.replace('/', '-'), ref.replace('/', '-'))
     else:
       return "ERROR"
 
@@ -110,5 +112,13 @@ class download_paper:
       print >> sys.stderr, "ERROR: Generating PDF file for %s" % filename
       return None
     return filename[:-4] + '.pdf'
+
+  def convert_pdf(self, pdf_filename, dst_path):
+    print >> sys.stderr, "Beginning conversion of %s" % pdf_filename
+    os.system("convert -verbose -density 200 %s -scale 1000 %s" % (pdf_filename, pdf_filename[:-4] + '-page.png'))
+    os.system("mkdir %s" % dst_path)
+    os.system("mv %s %s" % (os.path.join(os.path.dirname(pdf_filename), '*-page-*.png'), dst_path))
+    
+    print >> sys.stderr, "Done conversion of %s" % pdf_filename
 
 if __name__ == "__main__": app.run()
