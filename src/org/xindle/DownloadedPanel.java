@@ -115,7 +115,7 @@ public class DownloadedPanel extends AbstractKPanel {
 					Paper paper = (Paper) papers.get(i);
 					String paperName = paper.getName();
 					KWTSelectableLabel selectible = new KWTSelectableLabel(
-							paperName.substring(paperName.lastIndexOf("/")));
+							paperName);
 					class OpenPaperActionListener implements ActionListener {
 						public OpenPaperActionListener(Paper paper) {
 							this.paper = paper;

@@ -1,6 +1,7 @@
 package org.xindle;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Util {
 		for (int i = 0; i < dirs.length; i++) {
 			output.add(new Paper(dirs[i]));
 		}
-		logger.info(output);
+//		logger.info(output);
 
 		return output;
 	}

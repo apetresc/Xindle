@@ -1,6 +1,10 @@
 package org.xindle;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -20,21 +24,32 @@ public class Paper {
 	}
 
 	public String getName() {
-		return this.paperDir.toString();
+		File file = new File(this.paperDir, "meta.txt");
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			return reader.readLine();
+		} catch (IOException e) {
+			logger.warn("IOError");
+			return "Unknown Name";
+		}
+		// return this.paperDir.toString();
 	}
 
 	public File[] getPages() {
-		File[] files = this.paperDir.listFiles();
+		File[] files = this.paperDir.listFiles(new FilenameFilter() {
+			public boolean accept(File arg0, String name) {
+				return name.endsWith(".png");
+			}
+		});
 		Arrays.sort(files, new Comparator() {
 			public int compare(Object arg0, Object arg1) {
 				return String.valueOf(arg0).compareTo(String.valueOf(arg1));
 			}
 		});
 		/*
-		for (int i = 0; i < files.length; i++) {
-			logger.info(files[i].getName());
-		}
-		*/
+		 * for (int i = 0; i < files.length; i++) {
+		 * logger.info(files[i].getName()); }
+		 */
 		return files;
 	}
 }

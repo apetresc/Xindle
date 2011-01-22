@@ -77,8 +77,8 @@ public class Main extends AbstractKindlet {
 		new DownloadedPanel(root);
 
 		// set the default panel.
-		// root.setCurrentPanel(homePanel);
-		root.setCurrentPanel(searchPanel);
+		root.setCurrentPanel(homePanel);
+		// root.setCurrentPanel(searchPanel);
 		context.setMenu(menu);
 	}
 }
