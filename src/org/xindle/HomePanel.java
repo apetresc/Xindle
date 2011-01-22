@@ -41,6 +41,7 @@ public class HomePanel extends AbstractKPanel {
 		final KWTSelectableLabel new_titles[] = new KWTSelectableLabel[3];
 		final String str_titles[] = new String[3];
 		final String str_abstracts[] = new String[3];
+		final Result[] results = new Result[3];
 
 		get_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
 		browse_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
