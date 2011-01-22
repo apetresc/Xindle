@@ -18,7 +18,7 @@ import com.amazon.kindle.kindlet.ui.KindletUIResources;
 import com.amazon.kindle.kindlet.ui.KindletUIResources.KFontFamilyName;
 import com.amazon.kindle.kindlet.ui.border.KLineBorder;
 
-public class HomePanel extends KPanel {
+public class HomePanel extends AbstractKPanel {
 	KindletUIResources res = KindletUIResources.getInstance();
 	private UIRoot root;
 
@@ -82,5 +82,12 @@ public class HomePanel extends KPanel {
 		add(new_abstract3, gbc);
 
 		root.homePanel = this;
+	}
+
+	public Runnable onStart() {
+		return new Runnable() {
+			public void run() {
+			}
+		};
 	}
 }

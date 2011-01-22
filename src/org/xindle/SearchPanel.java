@@ -28,7 +28,7 @@ import com.amazon.kindle.kindlet.ui.KindletUIResources;
 import com.amazon.kindle.kindlet.ui.KindletUIResources.KFontFamilyName;
 import com.amazon.kindle.kindlet.ui.border.KLineBorder;
 
-public class SearchPanel extends KPanel {
+public class SearchPanel extends AbstractKPanel {
 	KTextField searchField;
 	KindletUIResources res = KindletUIResources.getInstance();
 	KPanel resultPanel = new KPanel();
@@ -85,7 +85,6 @@ public class SearchPanel extends KPanel {
 			context.getProgressIndicator().setString("Connecting");
 			new SearchHandler().connected();
 		} catch (InterruptedException e) {
-			// this should not occur.
 			e.printStackTrace();
 		}
 	}
@@ -103,13 +102,11 @@ public class SearchPanel extends KPanel {
 					InputStream is = connection.getInputStream();
 					BufferedReader reader = new BufferedReader(
 							new InputStreamReader(is));
-
+					resultPanel.add(new KLabel(reader.readLine()));
 				}
-
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -119,5 +116,13 @@ public class SearchPanel extends KPanel {
 		public void disabled(NetworkDisabledDetails detail)
 				throws InterruptedException {
 		}
+	}
+
+	public Runnable onStart() {
+		return new Runnable() {
+			public void run() {
+				searchField.requestFocus();
+			}
+		};
 	}
 }

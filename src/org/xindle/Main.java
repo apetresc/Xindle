@@ -40,12 +40,12 @@ public class Main extends AbstractKindlet {
 		// actual logic.
 		search.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				root.setCurrentPanel(root.searchPanel, null);
+				root.setCurrentPanel(root.searchPanel);
 			}
 		});
 		home.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				root.setCurrentPanel(root.homePanel, null);
+				root.setCurrentPanel(root.homePanel);
 			}
 		});
 		return menu;
@@ -63,7 +63,7 @@ public class Main extends AbstractKindlet {
 		homePanel = new HomePanel(root);
 
 		// set the default panel.
-		root.setCurrentPanel(homePanel, null);
+		root.setCurrentPanel(homePanel);
 		context.setMenu(menu);
 	}
 }
