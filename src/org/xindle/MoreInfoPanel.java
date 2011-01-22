@@ -115,12 +115,12 @@ public class MoreInfoPanel extends AbstractKPanel {
                         List pages = s3.listObjects("xindle-docs", s3Prefix).getObjectSummaries();
                         Iterator pagesIt = pages.iterator();
                         int p = 0;
+                        File dataDir = new File(context.getHomeDirectory(), "papers");
+                        if (!dataDir.exists()) { dataDir.mkdir(); }
+                        File docDir = new File(dataDir, result.id);
+                        if (!docDir.exists()) { docDir.mkdir(); }
                         while (pagesIt.hasNext()) {
                             S3Object page = s3.getObject(new GetObjectRequest("xindle-docs", ((S3ObjectSummary) pagesIt.next()).getKey()));
-                            File dataDir = new File(context.getHomeDirectory(), "papers");
-                            if (!dataDir.exists()) { dataDir.mkdir(); }
-                            File docDir = new File(dataDir, result.id);
-                            if (!docDir.exists()) { docDir.mkdir(); }
                             File dataFile = new File(docDir, result.id + "-page-"+p+".png");
                             InputStream pageData = page.getObjectContent();
                             FileOutputStream pageDataOut = new FileOutputStream(dataFile);
@@ -132,6 +132,11 @@ public class MoreInfoPanel extends AbstractKPanel {
                             pageData.close();
                             p++;
                         }
+                        File metaFile = new File(docDir, "meta.txt");
+                        PrintWriter metaDataOut = new PrintWriter(new FileWriter(metaFile));
+                        metaDataOut.print(result.title + '\n');
+                        metaDataOut.print(result.summary + '\n');
+                        metaDataOut.close();
                     } else {
                         logger.warn("Got non-OK response: " + connection.getResponseCode());
                     }
