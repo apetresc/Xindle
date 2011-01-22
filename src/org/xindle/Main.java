@@ -29,15 +29,15 @@ public class Main extends AbstractKindlet {
 	private KMenu makeMenu() {
 		KMenu menu = new KMenu();
 		KMenuItem home = new KMenuItem("Home");
+		KMenuItem my_papers = new KMenuItem("My Papers");
 		KMenuItem search = new KMenuItem("Search");
-		KMenuItem history = new KMenuItem("History");
 		KMenuItem exit = new KMenuItem("Exit");
 
 		menu.add(home);
 		menu.addSeparator();
 
+		menu.add(my_papers);
 		menu.add(search);
-		menu.add(history);
 		menu.addSeparator();
 
 		menu.add(exit);
@@ -52,7 +52,7 @@ public class Main extends AbstractKindlet {
 				root.setCurrentPanel(root.homePanel);
 			}
 		});
-		history.addActionListener(new ActionListener() {
+		my_papers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				root.setCurrentPanel(root.downloadedPanel);
 			}

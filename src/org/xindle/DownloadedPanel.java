@@ -40,7 +40,7 @@ public class DownloadedPanel extends AbstractKPanel {
 		public boolean dispatchKeyEvent(KeyEvent evt) {
 			logger.info("Key Pressed.");
 			if (isPictureShown) {
-				if (evt.getKeyCode() == KindleKeyCodes.VK_FIVE_WAY_LEFT) {
+				if (evt.getKeyCode() == KindleKeyCodes.VK_TURN_PAGE_BACK) {
 					// prev page!
 					if (pageIndex > 1) {
 						pageIndex--;
@@ -48,7 +48,7 @@ public class DownloadedPanel extends AbstractKPanel {
 						return true;
 					}
 				}
-				if (evt.getKeyCode() == KindleKeyCodes.VK_FIVE_WAY_RIGHT) {
+				if (evt.getKeyCode() == KindleKeyCodes.VK_LEFT_HAND_SIDE_TURN_PAGE || evt.getKeyCode() == KindleKeyCodes.VK_RIGHT_HAND_SIDE_TURN_PAGE) {
 					// next page!
 					if (pageIndex < paper.getPages().length - 1) {
 						pageIndex++;
