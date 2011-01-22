@@ -53,6 +53,7 @@ public class DownloadedPanel extends AbstractKPanel {
 					if (pageIndex < paper.getPages().length - 1) {
 						pageIndex++;
 						loadPicture(pageIndex);
+						return true;
 					}
 				}
 			}

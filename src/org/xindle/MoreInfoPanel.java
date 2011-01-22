@@ -130,7 +130,7 @@ public class MoreInfoPanel extends AbstractKPanel {
 	                        	context.getProgressIndicator().setString(page + " out of "+ pages.size());
 							}
 						}
-//                        EventQueue.invokeLater(new ProgressSetter(0));
+                        new ProgressSetter(0).run();
                         int p = 0;
                         File dataDir = new File(context.getHomeDirectory(), "papers");
                         if (!dataDir.exists()) { dataDir.mkdir(); }
@@ -151,9 +151,10 @@ public class MoreInfoPanel extends AbstractKPanel {
                             pageData.close();
                             p++;
 
+                            new ProgressSetter(p).run();
 //                            EventQueue.invokeLater(new ProgressSetter(p));
                         }
-
+                        context.getProgressIndicator().setString("");
 //                        EventQueue.invokeLater(new Runnable(){
 //							public void run() {
 //								context.getProgressIndicator().setString("");
@@ -168,12 +169,13 @@ public class MoreInfoPanel extends AbstractKPanel {
                     } else {
                         logger.warn("Got non-OK response: " + connection.getResponseCode());
                     }
+                    KOptionPane.showMessageDialog(root.currentPanel, "Download Complete");
                 } catch (MalformedURLException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {
                     logger.error(e.getMessage());
+                    KOptionPane.showMessageDialog(root.currentPanel, "Error while downloading.");
                 }
-	            
 	        }
 
 		public void disabled(NetworkDisabledDetails detail)
