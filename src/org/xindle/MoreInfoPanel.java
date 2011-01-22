@@ -3,6 +3,7 @@ package org.xindle;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,8 @@ import com.amazon.kindle.kindlet.ui.KLabel;
 import com.amazon.kindle.kindlet.ui.KLabelMultiline;
 import com.amazon.kindle.kindlet.ui.KOptionPane;
 import com.amazon.kindle.kindlet.ui.KTextArea;
+import com.amazon.kindle.kindlet.ui.KindletUIResources;
+import com.amazon.kindle.kindlet.ui.KindletUIResources.KFontFamilyName;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -73,7 +76,7 @@ public class MoreInfoPanel extends AbstractKPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbc.weighty = 0;
+		gbc.weighty = 1;
 		add(titleLabel, gbc);
 		gbc.gridy++;
 		add(summaryArea, gbc);
@@ -200,9 +203,11 @@ public class MoreInfoPanel extends AbstractKPanel {
 	}
 
 	public void setResult(Result result) {
+		KindletUIResources res = KindletUIResources.getInstance();
 		this.result = result;
-		titleLabel.setText("Paper:" + result.title);
-		summaryArea.setText("Summary:" + result.summary);
+		titleLabel.setText(result.title);
+		titleLabel.setFont(res.getFont(KFontFamilyName.SERIF, 25));
+		summaryArea.setText(result.summary);
 		downloadButton.requestFocus();
 	}
 }
