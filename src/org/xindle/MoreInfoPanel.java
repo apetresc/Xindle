@@ -51,7 +51,7 @@ public class MoreInfoPanel extends AbstractKPanel {
 	private KWTSelectableLabel downloadButton;
 	private DownloadHandler downloadHandler;
 
-	KLabel titleLabel = new KLabel("TITLES COMES HERE.");
+	KLabelMultiline titleLabel = new KLabelMultiline("TITLES COMES HERE.");
 	KLabelMultiline summaryArea = new KLabelMultiline("SUMMARY COMES HERE.");
 	Logger logger = Logger.getLogger(MoreInfoPanel.class);
 	KeyEventDispatcher eventDispatcher = new KeyEventDispatcher() {
