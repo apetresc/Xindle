@@ -96,7 +96,7 @@ public class HomePanel extends AbstractKPanel {
 						gbc.insets = new Insets(0, 0, 0, 0);
 						for (int n = 0; n < 3; n++) {
 							// trim abstracts
-							if (str_abstracts[n].length() > 250) {
+							if (str_abstracts[n] != null && str_abstracts[n].length() > 250) {
 								str_abstracts[n] = str_abstracts[n].substring(
 										0, 250) + "...";
 							}
