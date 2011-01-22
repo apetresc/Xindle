@@ -3,6 +3,7 @@ package org.xindle;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,7 +19,7 @@ public class SearchPanel extends KPanel {
 	KTextField searchField;
 	KindletUIResources res = KindletUIResources.getInstance();
 
-	public SearchPanel() {
+	public SearchPanel(UIRoot root) {
 		searchField = new KTextField(20);
 		final KButton searchBtn = new KButton("Search");
 		final KLabel label = new KLabel("Search:");
@@ -26,13 +27,15 @@ public class SearchPanel extends KPanel {
 
 		searchField.setBorder(new KLineBorder(1, true));
 		label.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
-		resultPanel.setLayout(new GridLayout(10, 1));
+		resultPanel.setLayout(new GridLayout(40, 1));
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.anchor = GridBagConstraints.NORTH;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
+		gbc.weighty = 0;
+		gbc.insets = new Insets(10, 10, 10, 10);
 		add(label, gbc);
 		gbc.gridx = 1;
 		add(searchField, gbc);
@@ -44,7 +47,7 @@ public class SearchPanel extends KPanel {
 		gbc.gridx = 0;
 		gbc.gridwidth = 3;
 
-		gbc.ipady = 40; // make this component tall
+		gbc.weighty = 1.0;
 		gbc.weightx = 0.0;
 
 		searchField.addActionListener(new ActionListener() {
@@ -56,5 +59,10 @@ public class SearchPanel extends KPanel {
 			}
 		});
 		add(resultPanel, gbc);
+		root.home = this;
+	}
+
+	public void search(String term) {
+		// send the request to the server..
 	}
 }
