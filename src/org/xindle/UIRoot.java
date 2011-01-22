@@ -15,6 +15,7 @@ public class UIRoot {
 	AbstractKPanel homePanel = null;
 	AbstractKPanel searchPanel = null;
 	MoreInfoPanel moreInfoPanel = null;
+	DownloadedPanel downloadedPanel = null;
 
 	AbstractKPanel currentPanel = null;
 

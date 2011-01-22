@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -127,7 +128,7 @@ public class MoreInfoPanel extends AbstractKPanel {
 	                        	context.getProgressIndicator().setString(page + " out of "+ pages.size());
 							}
 						}
-                        EventQueue.invokeLater(new ProgressSetter(0));
+//                        EventQueue.invokeLater(new ProgressSetter(0));
                         int p = 0;
                         while (pagesIt.hasNext()) {
                             S3Object page = s3.getObject(new GetObjectRequest("xindle-docs", ((S3ObjectSummary) pagesIt.next()).getKey()));
@@ -136,7 +137,9 @@ public class MoreInfoPanel extends AbstractKPanel {
                             if (!dataDir.exists()) { dataDir.mkdir(); }
                             File docDir = new File(dataDir, result.id);
                             if (!docDir.exists()) { docDir.mkdir(); }
-                            File dataFile = new File(docDir, result.id + "-page-"+p+".png");
+                            DecimalFormat df = new DecimalFormat("0000");
+                            df.format(p);
+                            File dataFile = new File(docDir, result.id + "-page-"+df.format(p)+".png");
                             InputStream pageData = page.getObjectContent();
                             FileOutputStream pageDataOut = new FileOutputStream(dataFile);
                             i = pageData.read();
@@ -147,13 +150,13 @@ public class MoreInfoPanel extends AbstractKPanel {
                             pageData.close();
                             p++;
 
-                            EventQueue.invokeLater(new ProgressSetter(p));
+//                            EventQueue.invokeLater(new ProgressSetter(p));
                         }
 
-                        EventQueue.invokeLater(new Runnable(){
-							public void run() {
-								context.getProgressIndicator().setString("");
-							}});
+//                        EventQueue.invokeLater(new Runnable(){
+//							public void run() {
+//								context.getProgressIndicator().setString("");
+//							}});
                         // done.
                         // KOptionPane.showMessageDialog(root.rootContainer, "Hello, world");
                     } else {
