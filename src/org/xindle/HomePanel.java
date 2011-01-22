@@ -74,7 +74,7 @@ public class HomePanel extends AbstractKPanel {
 											.substring(
 													0,
 													each_data.getTextContent()
-															.length() - 8);
+															.length() - 8).replace('\n', ' ');
 								}
 							}
 							item_num++;
