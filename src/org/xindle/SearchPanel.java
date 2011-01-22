@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -22,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.amazon.kindle.kindlet.KindletContext;
+import com.amazon.kindle.kindlet.event.KindleKeyCodes;
 import com.amazon.kindle.kindlet.net.ConnectivityHandler;
 import com.amazon.kindle.kindlet.net.NetworkDisabledDetails;
 import com.amazon.kindle.kindlet.ui.KButton;
@@ -37,9 +40,31 @@ public class SearchPanel extends AbstractKPanel {
 	KindletUIResources res = KindletUIResources.getInstance();
 	KPanel resultPanel = new KPanel();
 	private UIRoot root;
+	private String currentSearch;
+	private int currentPage = 0;
+	private int totalPages = 0;
 	public static final int DEFAULT_SEARCH_SIZE = 10;
 
 	Logger logger = Logger.getLogger(SearchPanel.class);
+
+	KeyEventDispatcher eventDispatcher = new KeyEventDispatcher() {
+		public boolean dispatchKeyEvent(KeyEvent evt) {
+			if ((evt.getKeyCode() == KindleKeyCodes.VK_RIGHT_HAND_SIDE_TURN_PAGE
+					|| evt.getKeyCode() == KindleKeyCodes.VK_LEFT_HAND_SIDE_TURN_PAGE) && currentPage < totalPages) {
+				// pagination of search results
+				currentPage++;
+				search(currentSearch);
+				return true;
+			}
+			if (evt.getKeyCode() == KindleKeyCodes.VK_TURN_PAGE_BACK && currentPage > 0) {
+				// pagination of search results
+				currentPage--;
+				search(currentSearch);
+				return true;
+			}
+			return false;
+		}
+	};
 
 	public SearchPanel(UIRoot root) {
 		this.root = root;
@@ -81,6 +106,8 @@ public class SearchPanel extends AbstractKPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				String searchTerm = searchField.getText();
 				searchField.setText("");
+				currentPage = 0;
+				currentSearch = searchTerm;
 				search(searchTerm);
 				searchField.repaint();
 				resultPanel.repaint();
@@ -118,7 +145,10 @@ public class SearchPanel extends AbstractKPanel {
 
 			for (int i = 0; i < items.getLength(); i++) {
 				Node item = items.item(i);
-
+				if(item.getNodeName().equals("opensearch:totalResults")){
+					totalPages =  Integer.parseInt(item.getTextContent()) / DEFAULT_SEARCH_SIZE;
+					logger.info(""+totalPages);
+				}
 				if (item.getNodeName().equals("entry")) {
 					NodeList childrens = item.getChildNodes();
 					String id = "";
@@ -131,10 +161,13 @@ public class SearchPanel extends AbstractKPanel {
 						} else if (childItem.getNodeName().equals("summary")) {
 							summary = childItem.getTextContent();
 						} else if (childItem.getNodeName().equals("id")) {
-						    id = childItem.getTextContent().substring(childItem.getTextContent().lastIndexOf('/') + 1);
-						    if (id.endsWith("v1") || id.endsWith("v2")) {
-						        id = id.substring(0, id.length() - 2);
-						    }
+							id = childItem.getTextContent()
+									.substring(
+											childItem.getTextContent()
+													.lastIndexOf('/') + 1);
+							if (id.endsWith("v1") || id.endsWith("v2")) {
+								id = id.substring(0, id.length() - 2);
+							}
 						}
 					}
 					results.add(new Result(title, summary, id));
@@ -149,7 +182,7 @@ public class SearchPanel extends AbstractKPanel {
 	}
 
 	/** Add a search result to display. */
-	public void addResult(final Result result) {
+	public void addResult(final Result result, boolean focus) {
 		KWTSelectableLabel selectable = new KWTSelectableLabel(result.title);
 		selectable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -159,6 +192,7 @@ public class SearchPanel extends AbstractKPanel {
 			}
 		});
 		resultPanel.add(selectable);
+        if (focus) { selectable.requestFocus(); }
 		resultPanel.add(new KLabel(result.summary));
 	}
 
@@ -171,7 +205,8 @@ public class SearchPanel extends AbstractKPanel {
 
 		public void connected() throws InterruptedException {
 			KindletContext context = root.context;
-			String url = generateUrl(term, 0, DEFAULT_SEARCH_SIZE);
+			String url = generateUrl(term, currentPage * DEFAULT_SEARCH_SIZE,
+					DEFAULT_SEARCH_SIZE);
 			context.getProgressIndicator().setString("");
 			final List results = searchUrl(url);
 			EventQueue.invokeLater(new Runnable() {
@@ -179,8 +214,9 @@ public class SearchPanel extends AbstractKPanel {
 					resultPanel.removeAll();
 					for (int i = 0; i < results.size(); i++) {
 						Result item = (Result) results.get(i);
-						addResult(item);
+						addResult(item, i == 0);
 					}
+					repaint();
 				}
 			});
 		}
@@ -196,6 +232,20 @@ public class SearchPanel extends AbstractKPanel {
 			public void run() {
 				searchField.requestFocus();
 				// addResult(new Result("Foo", "Bar"));
+				//remove pagination listener
+				KeyboardFocusManager.getCurrentKeyboardFocusManager()
+						.addKeyEventDispatcher(eventDispatcher);
+				root.rootContainer.repaint();
+				root.currentPanel.requestFocus();
+			}
+		};
+	}
+	public Runnable onStop(){
+		return new Runnable(){
+			public void run(){
+				//remove pagination listener
+                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .removeKeyEventDispatcher(eventDispatcher);
 			}
 		};
 	}

@@ -106,12 +106,11 @@ public class MoreInfoPanel extends AbstractKPanel {
                             bytes.add(new Byte(b));
                             i = in.read();
                         }
-                        Byte[] response = (Byte[]) bytes.toArray(new Byte[0]);
-                        byte[] presponse = new byte[response.length];
-                        for (int j = 0; j < presponse.length; j++) {
-                            presponse[j] = response[j].byteValue();
+                        byte[] response = new byte[bytes.size()];
+                        for (int j = 0; j < response.length; j++) {
+                            response[j] = ((Byte) bytes.get(j)).byteValue();
                         }
-                        String responseString = new String(presponse);
+                        String responseString = new String(response);
                         logger.info("Got response: " + responseString);
                         AmazonS3 s3 = new AmazonS3Client(new BasicAWSCredentials("AKIAIZ3F54ERWCUWT62Q", "lWkVNNwbxXWWhCK9uoUgWFmYIHoU87HLSM8MGR69"));
                         String s3Prefix = responseString.substring(responseString.lastIndexOf('/', responseString.lastIndexOf('/') - 1) + 1, responseString.lastIndexOf('/'));
@@ -130,13 +129,12 @@ public class MoreInfoPanel extends AbstractKPanel {
 						}
 //                        EventQueue.invokeLater(new ProgressSetter(0));
                         int p = 0;
+                        File dataDir = new File(context.getHomeDirectory(), "papers");
+                        if (!dataDir.exists()) { dataDir.mkdir(); }
+                        File docDir = new File(dataDir, result.id);
+                        if (!docDir.exists()) { docDir.mkdir(); }
                         while (pagesIt.hasNext()) {
                             S3Object page = s3.getObject(new GetObjectRequest("xindle-docs", ((S3ObjectSummary) pagesIt.next()).getKey()));
-                            
-                            File dataDir = new File(context.getHomeDirectory(), "papers");
-                            if (!dataDir.exists()) { dataDir.mkdir(); }
-                            File docDir = new File(dataDir, result.id);
-                            if (!docDir.exists()) { docDir.mkdir(); }
                             DecimalFormat df = new DecimalFormat("0000");
                             df.format(p);
                             File dataFile = new File(docDir, result.id + "-page-"+df.format(p)+".png");
@@ -159,6 +157,11 @@ public class MoreInfoPanel extends AbstractKPanel {
 //							}});
                         // done.
                         // KOptionPane.showMessageDialog(root.rootContainer, "Hello, world");
+                        File metaFile = new File(docDir, "meta.txt");
+                        PrintWriter metaDataOut = new PrintWriter(new FileWriter(metaFile));
+                        metaDataOut.print(result.title + '\n');
+                        metaDataOut.print(result.summary + '\n');
+                        metaDataOut.close();
                     } else {
                         logger.warn("Got non-OK response: " + connection.getResponseCode());
                     }
