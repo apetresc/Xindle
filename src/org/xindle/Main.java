@@ -65,7 +65,7 @@ public class Main extends AbstractKindlet {
 		KMenu menu = makeMenu();
 
 		searchPanel = new SearchPanel(root);
-		homePanel = new HomePanel(root);
+		homePanel = new HomePanel(root, searchPanel);
 		moreInfoPanel = new MoreInfoPanel(root);
 
 		// set the default panel.
