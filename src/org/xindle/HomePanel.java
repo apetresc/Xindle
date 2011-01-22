@@ -30,7 +30,7 @@ public class HomePanel extends AbstractKPanel {
 	final KLabel label = new KLabel("Newest Papers: (loading...)");
 	private UIRoot root;
 
-	public HomePanel(UIRoot root) {
+	public HomePanel(final UIRoot root) {
 		this.root = root;
 		final KButton get_btn = new KButton("Get Papers");
 		final KButton browse_btn = new KButton("My Papers");
@@ -139,6 +139,18 @@ public class HomePanel extends AbstractKPanel {
 		gbc.gridy = 1;
 		gbc.gridwidth = 2;
 		add(label, gbc);
+		browse_btn.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				root.setCurrentPanel(root.searchPanel);
+			}
+		});
+		get_btn.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				root.setCurrentPanel(root.searchPanel);
+			}
+		});
 
 		t.start();
 		root.homePanel = this;
