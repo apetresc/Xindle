@@ -16,9 +16,11 @@
   <property name="dir.lib"              location="${basedir}/lib" />
   <!-- Set this to the location of the KWT JAR file on your system. -->
   <property name="jar.kwt"			      	location="${dir.lib}/kwt-0.1.jar" />
+  <property name="jar.aws"              location="${dir.lib}/aws-kindle-library-1.0.12-debug.jar" />
   <property name="dir.img"              location="${basedir}/img" />
   <property name="dir.build.classes"    location="${dir.build}/classes" />
   <property name="dir.build.kwt"		    location="${dir.build}/kwt" />
+  <property name="dir.build.aws"        location="${dir.build}/aws" />
   <property name="file.output"          location="${dir.build}/${kindlet.title}.azw2" />
 
   <!-- Load the password for the keystore -->
@@ -67,11 +69,16 @@ Download the 'Personal Basis Profile Reference Implementation'.  Be sure to sele
     <mkdir dir="${dir.build.kwt}" />
   	<unjar src="${jar.kwt}" dest="${dir.build.kwt}" />
   </target>
+	
+  <target name="extract-aws">
+    <mkdir dir="${dir.build.aws}" />
+  	<unjar src="${jar.aws}" dest="${dir.build.aws}" />
+  </target>
 
   <!-- ===================================================================== -->
   <!-- | BUILD TARGETS                                                     | -->
   <!-- ===================================================================== -->
-  <target name="compile" description="Compiles the Java source files" depends="check-pbp,extract-kwt">
+  <target name="compile" description="Compiles the Java source files" depends="check-pbp,extract-kwt,extract-aws">
     <mkdir dir="${dir.build.classes}" />
   	<mkdir dir="${dir.build.classes}/img" />
     <!--
@@ -95,6 +102,8 @@ Download the 'Personal Basis Profile Reference Implementation'.  Be sure to sele
         </fileset>
       	<!-- Include the KWT library on the classpath -->
       	<pathelement location="${dir.build.kwt}" />
+      	<!-- Include the AWS library on the classpath -->
+      	<pathelement location="${dir.build.aws}" />
       </classpath>
       <include name="**/*.java" />
     </javac>
@@ -138,6 +147,7 @@ Download the 'Personal Basis Profile Reference Implementation'.  Be sure to sele
     <jar destfile="${file.output}">
       <fileset dir="${dir.build.classes}" />
       <fileset dir="${dir.build.kwt}" />
+      <fileset dir="${dir.build.aws}" />
       <manifest>
         <attribute name="Main-Class"             value="${kindlet.mainClass}" />
         <attribute name="Implementation-Vendor"  value="${kindlet.vendor}" />

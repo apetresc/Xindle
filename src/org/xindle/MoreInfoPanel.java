@@ -8,12 +8,18 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,6 +32,14 @@ import com.amazon.kindle.kindlet.net.NetworkDisabledDetails;
 import com.amazon.kindle.kindlet.ui.KLabel;
 import com.amazon.kindle.kindlet.ui.KLabelMultiline;
 import com.amazon.kindle.kindlet.ui.KTextArea;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public class MoreInfoPanel extends AbstractKPanel {
 	private UIRoot root;
@@ -75,7 +89,6 @@ public class MoreInfoPanel extends AbstractKPanel {
 	}
 
 	   class DownloadHandler implements ConnectivityHandler {
-
 	        public void connected() throws InterruptedException {
 	            KindletContext context = root.context;
 	            try {
@@ -97,6 +110,30 @@ public class MoreInfoPanel extends AbstractKPanel {
                         }
                         String responseString = new String(presponse);
                         logger.info("Got response: " + responseString);
+                        AmazonS3 s3 = new AmazonS3Client(new BasicAWSCredentials("AKIAIZ3F54ERWCUWT62Q", "lWkVNNwbxXWWhCK9uoUgWFmYIHoU87HLSM8MGR69"));
+                        String s3Prefix = responseString.substring(responseString.lastIndexOf('/', responseString.lastIndexOf('/') - 1) + 1, responseString.lastIndexOf('/'));
+                        logger.info("Requesting S3 prefix: " + s3Prefix);
+                        List pages = s3.listObjects("xindle-docs", s3Prefix).getObjectSummaries();
+                        Iterator pagesIt = pages.iterator();
+                        int p = 0;
+                        while (pagesIt.hasNext()) {
+                            S3Object page = s3.getObject(new GetObjectRequest("xindle-docs", ((S3ObjectSummary) pagesIt.next()).getKey()));
+                            
+                            File dataDir = new File(context.getHomeDirectory(), "papers");
+                            if (!dataDir.exists()) { dataDir.mkdir(); }
+                            File docDir = new File(dataDir, result.id);
+                            if (!docDir.exists()) { docDir.mkdir(); }
+                            File dataFile = new File(docDir, result.id + "-page-"+p+".png");
+                            InputStream pageData = page.getObjectContent();
+                            FileOutputStream pageDataOut = new FileOutputStream(dataFile);
+                            i = pageData.read();
+                            while (i >= 0) {
+                                pageDataOut.write(i);
+                                i = pageData.read();
+                            }
+                            pageData.close();
+                            p++;
+                        }
                     } else {
                         logger.warn("Got non-OK response: " + connection.getResponseCode());
                     }
