@@ -12,8 +12,9 @@ public class UIRoot {
 	KindletContext context;
 	Container rootContainer;
 
-	KPanel home;
-	KPanel currentPanel = null;
+	AbstractKPanel homePanel = null;
+	AbstractKPanel searchPanel = null;
+	AbstractKPanel currentPanel = null;
 
 	public UIRoot(KindletContext context) {
 		this.context = context;
@@ -28,12 +29,13 @@ public class UIRoot {
 	 * @param action
 	 *            Panel to be performed after the loading.
 	 * */
-	public void setCurrentPanel(KPanel panel, Runnable action) {
+	public void setCurrentPanel(AbstractKPanel panel) {
 		if (currentPanel != null) {
 			context.getRootContainer().remove(currentPanel);
 		}
 		context.getRootContainer().add(panel);
 		currentPanel = panel;
+		Runnable action = panel.onStart();
 		if (action != null) {
 			action.run();
 		}

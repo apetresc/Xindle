@@ -25,11 +25,13 @@ import com.amazon.kindle.kindlet.ui.KindletUIResources;
 import com.amazon.kindle.kindlet.ui.KindletUIResources.KFontFamilyName;
 import com.amazon.kindle.kindlet.ui.border.KLineBorder;
 
-public class HomePanel extends KPanel {
+public class HomePanel extends AbstractKPanel {
 	KindletUIResources res = KindletUIResources.getInstance();
 	final KLabel label = new KLabel("Newest Papers: (loading...)");
-	
-	public HomePanel() {
+	private UIRoot root;
+
+	public HomePanel(UIRoot root) {
+		this.root = root;
 		final KButton get_btn = new KButton("Get Papers");
 		final KButton browse_btn = new KButton("My Papers");
 
@@ -41,6 +43,7 @@ public class HomePanel extends KPanel {
 
 		get_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
 		browse_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
+
 		label.setFont(res.getFont(KFontFamilyName.SANS_SERIF, 25));
 
 		Runnable run = new Runnable() {
@@ -120,6 +123,7 @@ public class HomePanel extends KPanel {
 		gbc.anchor = GridBagConstraints.NORTH;
 		gbc.gridy = 0;
 		gbc.weightx = 0.5;
+
 		gbc.gridx = 0;
 		gbc.insets = new Insets(30, 30, 30, 30);
 		add(browse_btn, gbc);
@@ -135,6 +139,13 @@ public class HomePanel extends KPanel {
 		add(label, gbc);
 		
 		t.start();
+		root.homePanel = this;
+	}
 
+	public Runnable onStart() {
+		return new Runnable() {
+			public void run() {
+			}
+		};
 	}
 }
