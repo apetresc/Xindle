@@ -113,13 +113,8 @@ public class HomePanel extends AbstractKPanel {
 						gbc.weightx = 1;
 						gbc.insets = new Insets(0, 0, 0, 0);
 						for (int n = 0; n < 3; n++) {
-							// trim abstracts
-							if (str_abstracts[n] != null && str_abstracts[n].length() > 250) {
-								str_abstracts[n] = str_abstracts[n].substring(
-										0, 250) + "...";
-							}
 							// build ui elements
-							Result result = new Result(str_titles[n],str_abstracts[n], str_ids[n]);
+							Result result = new Result(str_titles[n], str_abstracts[n], str_ids[n]);
 							addResult(result, false);
 						}
 						label.setText("Newest Papers:");
@@ -176,8 +171,16 @@ public class HomePanel extends AbstractKPanel {
 		if (focus) {
 			selectable.requestFocus();
 		}
-		
-		KTextArea textarea = new KTextArea(result.summary);
+
+		String summary;
+		// trim abstracts
+		if (result.summary != null && result.summary.length() > 250) {
+			summary = result.summary.substring(
+					0, 250) + "...";
+		} else {
+			summary = result.summary;
+		}
+		KTextArea textarea = new KTextArea(summary);
 		textarea.setEditable(false);
 		textarea.setEnabled(false);
 		resultPanel.add(textarea);

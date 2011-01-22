@@ -68,7 +68,7 @@ public class DownloadedPanel extends AbstractKPanel {
 		this.picturePanel = new KPanel();
 
 		papersPanel.setLayout(new BorderLayout());
-		papersPanel.add(new KLabel("Downloaded"), BorderLayout.NORTH);
+		//papersPanel.add(new KLabel("Downloaded"), BorderLayout.NORTH);
 		papersPanel.add(resultPanel, BorderLayout.CENTER);
 		resultPanel.setLayout(new GridLayout(20, 1));
 
