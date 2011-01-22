@@ -121,6 +121,7 @@ public class SearchPanel extends AbstractKPanel {
 
 				if (item.getNodeName().equals("entry")) {
 					NodeList childrens = item.getChildNodes();
+					String id = "";
 					String title = "";
 					String summary = "";
 					for (int j = 0; j < childrens.getLength(); j++) {
@@ -129,9 +130,14 @@ public class SearchPanel extends AbstractKPanel {
 							title = childItem.getTextContent();
 						} else if (childItem.getNodeName().equals("summary")) {
 							summary = childItem.getTextContent();
+						} else if (childItem.getNodeName().equals("id")) {
+						    id = childItem.getTextContent().substring(childItem.getTextContent().lastIndexOf('/') + 1);
+						    if (id.endsWith("v1") || id.endsWith("v2")) {
+						        id = id.substring(0, id.length() - 2);
+						    }
 						}
 					}
-					results.add(new Result(title, summary));
+					results.add(new Result(title, summary, id));
 				}
 			}
 			logger.info(results);
