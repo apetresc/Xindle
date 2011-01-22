@@ -4,6 +4,7 @@ import com.amazon.kindle.kindlet.AbstractKindlet;
 import com.amazon.kindle.kindlet.KindletContext;
 import com.amazon.kindle.kindlet.ui.KMenu;
 import com.amazon.kindle.kindlet.ui.KMenuItem;
+import com.amazon.kindle.kindlet.ui.KindleOrientation;
 
 /**
  * This sample Kindlet demonstrates the use of the KWTCheckbox.
@@ -34,11 +35,14 @@ public class Main extends AbstractKindlet {
 
 	public void create(final KindletContext context) {
 		UIRoot root = new UIRoot(context);
-		// set the default panel.
+		
+		context.getOrientationController().lockOrientation(KindleOrientation.PORTRAIT);
+		
 		KMenu menu = makeMenu();
 
 		searchPanel = new SearchPanel(root);
 
+		// set the default panel.
 		root.setCurrentPanel(searchPanel, null);
 		context.setMenu(menu);
 	}
