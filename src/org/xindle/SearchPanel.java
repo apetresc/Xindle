@@ -182,7 +182,7 @@ public class SearchPanel extends AbstractKPanel {
 	}
 
 	/** Add a search result to display. */
-	public void addResult(final Result result) {
+	public void addResult(final Result result, boolean focus) {
 		KWTSelectableLabel selectable = new KWTSelectableLabel(result.title);
 		selectable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -192,6 +192,7 @@ public class SearchPanel extends AbstractKPanel {
 			}
 		});
 		resultPanel.add(selectable);
+        if (focus) { selectable.requestFocus(); }
 		resultPanel.add(new KLabel(result.summary));
 	}
 
@@ -213,7 +214,7 @@ public class SearchPanel extends AbstractKPanel {
 					resultPanel.removeAll();
 					for (int i = 0; i < results.size(); i++) {
 						Result item = (Result) results.get(i);
-						addResult(item);
+						addResult(item, i == 0);
 					}
 					repaint();
 				}
