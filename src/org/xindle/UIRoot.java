@@ -12,7 +12,8 @@ public class UIRoot {
 	KindletContext context;
 	Container rootContainer;
 
-	KPanel home;
+	KPanel homePanel = null;
+	KPanel searchPanel = null;
 	KPanel currentPanel = null;
 
 	public UIRoot(KindletContext context) {

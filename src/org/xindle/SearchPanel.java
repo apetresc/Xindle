@@ -6,7 +6,20 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import javax.xml.transform.Result;
+
+import com.amazon.kindle.kindlet.KindletContext;
+import com.amazon.kindle.kindlet.net.ConnectivityHandler;
+import com.amazon.kindle.kindlet.net.NetworkDisabledDetails;
 import com.amazon.kindle.kindlet.ui.KButton;
 import com.amazon.kindle.kindlet.ui.KLabel;
 import com.amazon.kindle.kindlet.ui.KPanel;
@@ -18,12 +31,14 @@ import com.amazon.kindle.kindlet.ui.border.KLineBorder;
 public class SearchPanel extends KPanel {
 	KTextField searchField;
 	KindletUIResources res = KindletUIResources.getInstance();
+	KPanel resultPanel = new KPanel();
+	private UIRoot root;
 
 	public SearchPanel(UIRoot root) {
+		this.root = root;
 		searchField = new KTextField(20);
 		final KButton searchBtn = new KButton("Search");
 		final KLabel label = new KLabel("Search:");
-		final KPanel resultPanel = new KPanel();
 
 		searchField.setBorder(new KLineBorder(1, true));
 		label.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
@@ -52,17 +67,57 @@ public class SearchPanel extends KPanel {
 
 		searchField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				resultPanel.add(new KLabel(searchField.getText()));
+				String searchTerm = searchField.getText();
+				resultPanel.add(new KLabel(searchTerm));
 				searchField.setText("");
+				search(searchTerm);
 				searchField.repaint();
 				resultPanel.repaint();
 			}
 		});
 		add(resultPanel, gbc);
-		root.home = this;
+		root.searchPanel = this;
 	}
 
 	public void search(String term) {
-		// send the request to the server..
+		try {
+			KindletContext context = root.context;
+			context.getProgressIndicator().setString("Connecting");
+			new SearchHandler().connected();
+		} catch (InterruptedException e) {
+			// this should not occur.
+			e.printStackTrace();
+		}
+	}
+
+	class SearchHandler implements ConnectivityHandler {
+		public void connected() throws InterruptedException {
+			KindletContext context = root.context;
+			try {
+				String urlstr = "http://google.com";
+				URL url;
+				url = new URL(urlstr);
+				HttpURLConnection connection = (HttpURLConnection) url
+						.openConnection();
+				if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					InputStream is = connection.getInputStream();
+					BufferedReader reader = new BufferedReader(
+							new InputStreamReader(is));
+
+				}
+
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			context.getProgressIndicator().setString("");
+		}
+
+		public void disabled(NetworkDisabledDetails detail)
+				throws InterruptedException {
+		}
 	}
 }

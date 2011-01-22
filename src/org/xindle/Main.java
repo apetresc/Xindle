@@ -1,5 +1,10 @@
 package org.xindle;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import org.apache.log4j.spi.RootCategory;
+
 import com.amazon.kindle.kindlet.AbstractKindlet;
 import com.amazon.kindle.kindlet.KindletContext;
 import com.amazon.kindle.kindlet.ui.KMenu;
@@ -14,6 +19,8 @@ import com.amazon.kindle.kindlet.ui.KindleOrientation;
  */
 public class Main extends AbstractKindlet {
 	private SearchPanel searchPanel = null;
+	private HomePanel homePanel = null;
+	private UIRoot root = null;
 
 	private KMenu makeMenu() {
 		KMenu menu = new KMenu();
@@ -30,20 +37,33 @@ public class Main extends AbstractKindlet {
 		menu.addSeparator();
 
 		menu.add(exit);
+		// actual logic.
+		search.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				root.setCurrentPanel(root.searchPanel, null);
+			}
+		});
+		home.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				root.setCurrentPanel(root.homePanel, null);
+			}
+		});
 		return menu;
 	}
 
 	public void create(final KindletContext context) {
-		UIRoot root = new UIRoot(context);
-		
-		context.getOrientationController().lockOrientation(KindleOrientation.PORTRAIT);
-		
+		root = new UIRoot(context);
+
+		context.getOrientationController().lockOrientation(
+				KindleOrientation.PORTRAIT);
+
 		KMenu menu = makeMenu();
 
 		searchPanel = new SearchPanel(root);
+		homePanel = new HomePanel(root);
 
 		// set the default panel.
-		root.setCurrentPanel(searchPanel, null);
+		root.setCurrentPanel(homePanel, null);
 		context.setMenu(menu);
 	}
 }
