@@ -57,6 +57,7 @@ class download_paper:
   def untar_source(self, filename):
     if not tarfile.is_tarfile(filename):
       print filename + " is not a tar file. No need to untar."
+      os.rename(filename, filename[:-4] + ".tex")
       return
     tar_file = tarfile.open(filename, 'r')
     print "Extracting " + filename + " to " + os.path.dirname(filename)
