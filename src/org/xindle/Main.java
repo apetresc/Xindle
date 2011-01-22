@@ -21,8 +21,10 @@ import com.amazon.kindle.kindlet.ui.KindleOrientation;
 public class Main extends AbstractKindlet {
 	private SearchPanel searchPanel = null;
 	private HomePanel homePanel = null;
+	
 	private UIRoot root = null;
 	Logger logger = Logger.getLogger(Main.class);
+	private MoreInfoPanel moreInfoPanel;
 
 	private KMenu makeMenu() {
 		KMenu menu = new KMenu();
@@ -64,6 +66,7 @@ public class Main extends AbstractKindlet {
 
 		searchPanel = new SearchPanel(root);
 		homePanel = new HomePanel(root);
+		moreInfoPanel = new MoreInfoPanel(root);
 
 		// set the default panel.
 //		root.setCurrentPanel(homePanel);

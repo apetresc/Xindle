@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,20 +107,6 @@ public class SearchPanel extends AbstractKPanel {
 		return urlstr;
 	}
 
-	public static class Result {
-		String title;
-		String summary;
-
-		public Result(String title, String summary) {
-			this.title = title;
-			this.summary = summary;
-		}
-
-		public String toString() {
-			return title + " " + summary;
-		}
-	}
-
 	public List searchUrl(String url) {
 		List results = new ArrayList();
 		try {
@@ -154,6 +142,20 @@ public class SearchPanel extends AbstractKPanel {
 		return results;
 	}
 
+	/** Add a search result to display. */
+	public void addResult(final Result result) {
+		KWTSelectableLabel selectable = new KWTSelectableLabel(result.title);
+		selectable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				// when the item is selected.
+				root.setCurrentPanel(root.moreInfoPanel);
+				root.moreInfoPanel.setResult(result);
+			}
+		});
+		resultPanel.add(selectable);
+		resultPanel.add(new KLabel(result.summary));
+	}
+
 	class SearchHandler implements ConnectivityHandler {
 		private String term;
 
@@ -171,8 +173,7 @@ public class SearchPanel extends AbstractKPanel {
 					resultPanel.removeAll();
 					for (int i = 0; i < results.size(); i++) {
 						Result item = (Result) results.get(i);
-						resultPanel.add(new KWTSelectableLabel(item.title));
-						resultPanel.add(new KLabel(item.summary));
+						addResult(item);
 					}
 				}
 			});
@@ -180,6 +181,7 @@ public class SearchPanel extends AbstractKPanel {
 
 		public void disabled(NetworkDisabledDetails detail)
 				throws InterruptedException {
+			// do nothing.
 		}
 	}
 
@@ -187,6 +189,7 @@ public class SearchPanel extends AbstractKPanel {
 		return new Runnable() {
 			public void run() {
 				searchField.requestFocus();
+				// addResult(new Result("Foo", "Bar"));
 			}
 		};
 	}
