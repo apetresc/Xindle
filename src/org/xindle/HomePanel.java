@@ -28,13 +28,13 @@ import com.amazon.kindle.kindlet.ui.border.KLineBorder;
 public class HomePanel extends AbstractKPanel {
 	KindletUIResources res = KindletUIResources.getInstance();
 	final KLabel label = new KLabel("Newest Papers: (loading...)");
+	final KButton get_btn = new KButton("Get Papers");
+	final KButton browse_btn = new KButton("My Papers");
 	private UIRoot root;
 
 	public HomePanel(final UIRoot root) {
 		this.root = root;
 		
-		final KButton get_btn = new KButton("Get Papers");
-		final KButton browse_btn = new KButton("My Papers");
 
 		// download and parse the feed
 		final KTextArea new_abstracts[] = new KTextArea[3];
@@ -161,7 +161,7 @@ public class HomePanel extends AbstractKPanel {
 	public Runnable onStart() {
 		return new Runnable() {
 			public void run() {
-				root.currentPanel.requestFocus();
+				browse_btn.requestFocus();
 				root.rootContainer.repaint();
 			}
 		};

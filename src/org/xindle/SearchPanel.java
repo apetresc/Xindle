@@ -236,7 +236,6 @@ public class SearchPanel extends AbstractKPanel {
 				KeyboardFocusManager.getCurrentKeyboardFocusManager()
 						.addKeyEventDispatcher(eventDispatcher);
 				root.rootContainer.repaint();
-				root.currentPanel.requestFocus();
 			}
 		};
 	}
