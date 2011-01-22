@@ -154,6 +154,10 @@ public class HomePanel extends AbstractKPanel {
 
 		t.start();
 		root.homePanel = this;
+
+		gbc.gridy = 2;
+		gbc.ipady = 500;
+		add(resultPanel, gbc);
 		//this.root.setCurrentPanel(searchPanel);
 	}
 
