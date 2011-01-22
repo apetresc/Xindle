@@ -5,7 +5,16 @@ import os
 import os.path
 import tarfile
 import re
+import logging
+import sys
+from logging import StreamHandler
 from urlparse import parse_qs
+
+# Configure the logger.
+logger = logging.getLogger()
+stderr = StreamHandler(sys.stderr)
+stderr.setFormatter(logging.Formatter('[%(levelname)s] %(message)s (%(lineno)d)'))
+logger.addHandler(stderr)
 
 urls = (
     '/download(.*)', 'download_paper'
@@ -14,21 +23,21 @@ urls = (
 app = web.application(urls, globals())
 
 class download_paper:
-  
+
   def findRefType(self, ref):
-    ref = ref.replace('arxiv:','')
-    if re.search(r'^[a-zA-Z\-]+/\d{7}$',ref):
+    ref = ref.replace('arxiv:', '')
+    if re.search(r'^[a-zA-Z\-]+/\d{7}$', ref):
       type = 'old-style eprint'
-    elif re.search(r'^\d{7}$',ref):
+    elif re.search(r'^\d{7}$', ref):
       type = 'old-style eprint'
       ref = 'hep-th/' + ref
-    elif re.search('^\d{4}\.\d{4}$',ref):
+    elif re.search('^\d{4}\.\d{4}$', ref):
       type = 'new-style eprint'
     else:
       type = 'not arXiv'
 
     return type, ref
-  
+
   def GET(self, name):
     arxiv_id = (parse_qs(web.ctx.query[1:]))['arxiv_id'][0]
     type, ref = self.findRefType(arxiv_id)
@@ -42,7 +51,7 @@ class download_paper:
     try:
       os.mkdir(download_path + ref.replace('/', '-'))
     except OSError:
-      print "Directory " + download_path + ref.replace('/', '-') + " already exists!"
+      logger.warn("Directory %s already exists!", download_path + ref.replace('/', '-'))
     download_path = download_path + ref.replace('/', '-') + "/"
     filename = download_path + ref.replace('/', '-') + ".tar"
     urllib.urlretrieve('http://arxiv.org/e-print/' + ref, filename + ".dum")
@@ -56,12 +65,12 @@ class download_paper:
 
   def untar_source(self, filename):
     if not tarfile.is_tarfile(filename):
-      print filename + " is not a tar file. No need to untar."
+      logger.info('%s is not a tar file. No need to untar.', filename)
       return
     tar_file = tarfile.open(filename, 'r')
-    print "Extracting " + filename + " to " + os.path.dirname(filename)
+    logger.info("Extracting %s to %s.", filename, os.path.dirname(filename))
     tar_file.extractall(os.path.dirname(filename))
     tar_file.close()
 
-
+logger.warn('Hello')
 if __name__ == "__main__": app.run()
