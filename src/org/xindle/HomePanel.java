@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.kwt.ui.KWTSelectableLabel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -30,17 +31,18 @@ public class HomePanel extends AbstractKPanel {
 	final KLabel label = new KLabel("Newest Papers: (loading...)");
 	final KButton get_btn = new KButton("Get Papers");
 	final KButton browse_btn = new KButton("My Papers");
+	final KPanel resultPanel = new KPanel();
 	private UIRoot root;
+	Logger logger = Logger.getLogger(HomePanel.class);
 
 	public HomePanel(final UIRoot root) {
 		this.root = root;
 		
 
 		// download and parse the feed
-		final KTextArea new_abstracts[] = new KTextArea[3];
-		final KWTSelectableLabel new_titles[] = new KWTSelectableLabel[3];
 		final String str_titles[] = new String[3];
 		final String str_abstracts[] = new String[3];
+		final String str_ids[] = new String[3];
 
 		get_btn.setFont(res.getFont(KFontFamilyName.MONOSPACE, 30));
 		get_btn.addActionListener(new ActionListener() {
@@ -89,6 +91,11 @@ public class HomePanel extends AbstractKPanel {
 															.length() - 8)
 											.replace('\n', ' ');
 								}
+								if (each_data.getNodeName().equals(
+								"link")) {
+							str_ids[item_num] = Util.getIdFromUrl(each_data
+									.getTextContent());
+						}
 							}
 							item_num++;
 						}
@@ -112,15 +119,8 @@ public class HomePanel extends AbstractKPanel {
 										0, 250) + "...";
 							}
 							// build ui elements
-							new_abstracts[n] = new KTextArea(str_abstracts[n]);
-							new_abstracts[n].setEditable(false);
-							new_abstracts[n].setEnabled(false);
-							new_titles[n] = new KWTSelectableLabel(
-									str_titles[n]);
-							gbc.gridy++;
-							add(new_titles[n], gbc);
-							gbc.gridy++;
-							add(new_abstracts[n], gbc);
+							Result result = new Result(str_titles[n],str_abstracts[n], str_ids[n]);
+							addResult(result, false);
 						}
 						label.setText("Newest Papers:");
 						repaint();
@@ -136,6 +136,7 @@ public class HomePanel extends AbstractKPanel {
 		gbc.anchor = GridBagConstraints.NORTH;
 		gbc.gridy = 0;
 		gbc.weightx = 0.5;
+		gbc.weighty = 1;
 
 		gbc.gridx = 0;
 		gbc.insets = new Insets(30, 30, 30, 30);
@@ -156,6 +157,28 @@ public class HomePanel extends AbstractKPanel {
 		//this.root.setCurrentPanel(searchPanel);
 	}
 
+	/** Add a search result to display. */
+	public void addResult(final Result result, boolean focus) {
+		KWTSelectableLabel selectable = new KWTSelectableLabel(result.title);
+		selectable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				// when the item is selected.
+				logger.info(result);
+				root.setCurrentPanel(root.moreInfoPanel);
+				root.moreInfoPanel.setResult(result);
+			}
+		});
+		resultPanel.add(selectable);
+		if (focus) {
+			selectable.requestFocus();
+		}
+		
+		KTextArea textarea = new KTextArea(result.summary);
+		textarea.setEditable(false);
+		textarea.setEnabled(false);
+		resultPanel.add(textarea);
+	}
+	
 	public Runnable onStart() {
 		return new Runnable() {
 			public void run() {

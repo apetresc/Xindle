@@ -203,5 +203,6 @@ public class MoreInfoPanel extends AbstractKPanel {
 		this.result = result;
 		titleLabel.setText("Paper:" + result.title);
 		summaryArea.setText("Summary:" + result.summary);
+		downloadButton.requestFocus();
 	}
 }
