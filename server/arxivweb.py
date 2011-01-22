@@ -35,6 +35,9 @@ class download_paper:
   def GET(self, name):
     arxiv_id = (parse_qs(web.ctx.query[1:]))['arxiv_id'][0]
     type, ref = self.findRefType(arxiv_id)
+    if os.path.isdir(os.path.join('/mnt/xindle-docs', ref.replace('/', '-'))):
+      print "Already handled %s before." % ref
+      return 'http://xindle-docs.s3.amazonaws.amazon.com/%s/%s-page-0.png' % (ref.replace('/', '-'), ref.replace('/', '-'))
     filename = self.download_source(ref, type, "docs/")
     self.untar_source(filename)
     tex_file_name = self.determine_main_tex_file(filename)
