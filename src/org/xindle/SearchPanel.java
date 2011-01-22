@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,20 +107,6 @@ public class SearchPanel extends AbstractKPanel {
 		return urlstr;
 	}
 
-	public static class Result {
-		String title;
-		String summary;
-
-		public Result(String title, String summary) {
-			this.title = title;
-			this.summary = summary;
-		}
-
-		public String toString() {
-			return title + " " + summary;
-		}
-	}
-
 	public List searchUrl(String url) {
 		List results = new ArrayList();
 		try {
@@ -133,6 +121,7 @@ public class SearchPanel extends AbstractKPanel {
 
 				if (item.getNodeName().equals("entry")) {
 					NodeList childrens = item.getChildNodes();
+					String id = "";
 					String title = "";
 					String summary = "";
 					for (int j = 0; j < childrens.getLength(); j++) {
@@ -141,9 +130,14 @@ public class SearchPanel extends AbstractKPanel {
 							title = childItem.getTextContent();
 						} else if (childItem.getNodeName().equals("summary")) {
 							summary = childItem.getTextContent();
+						} else if (childItem.getNodeName().equals("id")) {
+						    id = childItem.getTextContent().substring(childItem.getTextContent().lastIndexOf('/') + 1);
+						    if (id.endsWith("v1") || id.endsWith("v2")) {
+						        id = id.substring(0, id.length() - 2);
+						    }
 						}
 					}
-					results.add(new Result(title, summary));
+					results.add(new Result(title, summary, id));
 				}
 			}
 			logger.info(results);
@@ -152,6 +146,20 @@ public class SearchPanel extends AbstractKPanel {
 			logger.error("Error while searchUrl()");
 		}
 		return results;
+	}
+
+	/** Add a search result to display. */
+	public void addResult(final Result result) {
+		KWTSelectableLabel selectable = new KWTSelectableLabel(result.title);
+		selectable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				// when the item is selected.
+				root.setCurrentPanel(root.moreInfoPanel);
+				root.moreInfoPanel.setResult(result);
+			}
+		});
+		resultPanel.add(selectable);
+		resultPanel.add(new KLabel(result.summary));
 	}
 
 	class SearchHandler implements ConnectivityHandler {
@@ -171,8 +179,7 @@ public class SearchPanel extends AbstractKPanel {
 					resultPanel.removeAll();
 					for (int i = 0; i < results.size(); i++) {
 						Result item = (Result) results.get(i);
-						resultPanel.add(new KWTSelectableLabel(item.title));
-						resultPanel.add(new KLabel(item.summary));
+						addResult(item);
 					}
 				}
 			});
@@ -180,6 +187,7 @@ public class SearchPanel extends AbstractKPanel {
 
 		public void disabled(NetworkDisabledDetails detail)
 				throws InterruptedException {
+			// do nothing.
 		}
 	}
 
@@ -187,6 +195,7 @@ public class SearchPanel extends AbstractKPanel {
 		return new Runnable() {
 			public void run() {
 				searchField.requestFocus();
+				// addResult(new Result("Foo", "Bar"));
 			}
 		};
 	}

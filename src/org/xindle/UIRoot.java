@@ -14,6 +14,8 @@ public class UIRoot {
 
 	AbstractKPanel homePanel = null;
 	AbstractKPanel searchPanel = null;
+	MoreInfoPanel moreInfoPanel = null;
+
 	AbstractKPanel currentPanel = null;
 
 	public UIRoot(KindletContext context) {
@@ -31,10 +33,15 @@ public class UIRoot {
 	 * */
 	public void setCurrentPanel(AbstractKPanel panel) {
 		if (currentPanel != null) {
+			Runnable stopAction = currentPanel.onStop();
+			if (stopAction != null) {
+				stopAction.run();
+			}
 			context.getRootContainer().remove(currentPanel);
 		}
 		context.getRootContainer().add(panel);
 		currentPanel = panel;
+		panel.repaint();
 		Runnable action = panel.onStart();
 		if (action != null) {
 			action.run();
