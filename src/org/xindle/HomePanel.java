@@ -151,21 +151,6 @@ public class HomePanel extends AbstractKPanel {
 		gbc.gridy = 1;
 		gbc.gridwidth = 2;
 		add(label, gbc);
-		gbc.gridy = 2;
-		gbc.ipady = 500;
-		add(resultPanel, gbc);
-		browse_btn.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				root.setCurrentPanel(root.downloadedPanel);
-			}
-		});
-		get_btn.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				root.setCurrentPanel(root.searchPanel);
-			}
-		});
 
 		t.start();
 		root.homePanel = this;
